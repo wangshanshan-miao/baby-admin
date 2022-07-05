@@ -7,13 +7,18 @@ const routes: RouteRecordRaw[] = [
     component: LayoutBusiness,
     path: '/',
     children: [
-      {
-        path: '/test',
-        component: () => import('@/pages/test-role/index.vue')
-      },
+      // {
+      //   path: '/test',
+      //   component: () => import('@/pages/test-role/index.vue')
+      // },
       {
         path: '/brandstore',
         component: () => import('@/pages/brand-store/index.vue')
+      },
+      {
+        // path: '/brandproduct',
+        path: '/test',
+        component: () => import('@/pages/brand-product/index.vue')
       }
     ]
   }

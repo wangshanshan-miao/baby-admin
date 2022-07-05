@@ -60,12 +60,16 @@ import { reactive } from 'vue';
       els: [
         // 普通表格字段
         {
-          label: '门店',
-          prop: 'roCode'
+          label: '商品图片',
+          renderFn(row) {
+            return (
+              <img style="width:3em;height:3em;" src="https://img0.baidu.com/it/u=8212649,2817595929&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500"/>
+            )
+          }
         },
         // render渲染字段
         {
-          label: '门店地址',
+          label: '商品名称',
           renderFn(row) {
             return (
               <span>{ row.address }</span>
@@ -73,10 +77,34 @@ import { reactive } from 'vue';
           }
         },
         {
-          label: '门店联系电话',
+          label: '商品规格',
           renderFn(row) {
             return (
-              <span>{ row.contactPhone }</span>
+              <span>{ row.address1 }</span>
+            )
+          }
+        },
+        {
+          label: '商品代码',
+          renderFn(row) {
+            return (
+              <span>{ row.address2 }</span>
+            )
+          }
+        },
+        {
+          label: '商品描述',
+          renderFn(row) {
+            return (
+              <span>{ row.contactPhone3 }</span>
+            )
+          }
+        },
+        {
+          label: '数量（发放/库存）',
+          renderFn(row) {
+            return (
+              <span>{ row.contactPhone1 }</span>
             )
           }
         },
@@ -123,7 +151,7 @@ import { reactive } from 'vue';
       els: [
         // 普通输入框例子
         {
-          label: '门店',
+          label: '产品名',
           prop: 'roName',
           eType: 'el-input',
 
@@ -137,67 +165,82 @@ import { reactive } from 'vue';
             width: '100%'
           }
         },
+        {
+          label: '产品规格',
+          prop: 'ro1',
+          eType: 'el-input',
 
-        // 图片上传
+          // 布局属性
+          col: {
+            span: 24
+          },
+          style: {
+            width: '100%'
+          }
+        },
+        {
+          label: '产品代码',
+          prop: 'roCode',
+          eType: 'el-input',
+          col: {
+            span: 24
+          },
+          style: {
+            width: '100%'
+          }
+        },
+        {
+          label: '品牌',
+          prop: 'roCode',
+          eType: 'el-input',
+          col: {
+            span: 24
+          },
+          style: {
+            width: '100%'
+          }
+        },
         {
           eType: 'img-upload',
           prop: 'img',
-          label: '门店图片',
+          label: '商品图',
           props: {
             // 多图模式
             mult: true
           }
         },
-        // 下拉选择
-        // 普通下拉,静态数据支撑
         {
-          eType: 'el-select',
-          prop: 'roName2',
-          label: '地址',
-
-          // select组件的属性
-          props: {
-            filterable: true,
-            clearable: true
-          },
-          optionsData: {
-            list: [
-              {
-                label: '下拉选项1',
-                value: '选项1'
-              },
-              {
-                label: '下拉选项2',
-                value: '选项2'
-              }
-            ]
-          }
-        },
-        {
-          label: '具体地址',
-          prop: 'roName',
+          label: '商品描述',
+          prop: 'desc',
           eType: 'el-input',
-          // 布局属性
+          props:{
+            type:'textarea'
+          },
           col: {
             span: 24
           },
-          // 控制组件根元素的样式
           style: {
             width: '100%'
           }
         },
-        // 普通输入框例子
         {
-          label: '定位',
-          prop: 'location',
-          eType: 'a-map',
-
-          // 布局属性
+          label: '是否启用',
+          prop: 'desc1',
+          eType: 'el-switch',
           col: {
             span: 24
           },
-
-          // 控制组件根元素的样式
+          style: {
+            width: '100%'
+          }
+        },
+        {
+          label: '是否限制',
+          prop: 'desc2',
+          eType: 'el-switch',
+          col: {
+            span: 24
+          },
           style: {
             width: '100%'
           }
