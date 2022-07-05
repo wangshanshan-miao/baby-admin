@@ -60,19 +60,26 @@ import { reactive } from 'vue';
       els: [
         // 普通表格字段
         {
-          label: '角色编码',
-          width: 320,
+          label: '门店',
           prop: 'roCode'
         },
         // render渲染字段
         {
-          label: '员工名称',
+          label: '门店地址',
           renderFn(row) {
             return (
-              <span>{ row.roName }</span>
+              <span>{ row.address }</span>
             )
           }
-        }
+        },
+        {
+          label: '门店联系电话',
+          renderFn(row) {
+            return (
+              <span>{ row.contactPhone }</span>
+            )
+          }
+        },
       ]
     },
     // 是否存在表单
@@ -101,23 +108,22 @@ import { reactive } from 'vue';
       // 绑定数据钩子函数
       async bindData(formData) {
         // this 指向表单管理器
-        console.log(this)
+        console.log(this,formData,'绑定数据钩子函数')
         return formData
       },
 
       // 表单数据提交前的钩子函数
       async beforeSubmit(formData) {
         // this 指向表单管理器
-        console.log(this)
+        console.log(this,formData,'表单数据提交前的钩子函数')
         return formData
       },
 
       // 表单元素成员
       els: [
-
         // 普通输入框例子
         {
-          label: '角色名称',
+          label: '门店',
           prop: 'roName',
           eType: 'el-input',
 
@@ -132,12 +138,22 @@ import { reactive } from 'vue';
           }
         },
 
+        // 图片上传
+        {
+          eType: 'img-upload',
+          prop: 'img',
+          label: '门店图片',
+          props: {
+            // 多图模式
+            mult: true
+          }
+        },
         // 下拉选择
         // 普通下拉,静态数据支撑
         {
           eType: 'el-select',
           prop: 'roName2',
-          label: '静态数据下拉',
+          label: '地址',
 
           // select组件的属性
           props: {
@@ -157,35 +173,34 @@ import { reactive } from 'vue';
             ]
           }
         },
-
-        // 下拉选择
-        // 接口数据支撑下拉
         {
-          eType: 'el-select',
-          prop: 'roName3',
-          label: '接口数据下拉',
-          props: {
-            filterable: true,
-            clearable: true
+          label: '具体地址',
+          prop: 'roName',
+          eType: 'el-input',
+          // 布局属性
+          col: {
+            span: 24
           },
-          optionsData: {
-            list: [],
-            _reflect: 'roleList',
-            label: 'roName',
-            value: 'roName'
+          // 控制组件根元素的样式
+          style: {
+            width: '100%'
           }
         },
-
-        // 图片上传
+        // 普通输入框例子
         {
-          eType: 'img-upload',
-          prop: 'img',
-          label: '图片',
-          props: {
-            // 多图模式
-            mult: true
+          label: '定位',
+          prop: 'location',
+          eType: 'a-map',
+          // 布局属性
+          col: {
+            span: 24
+          },
+
+          // 控制组件根元素的样式
+          style: {
+            width: '100%'
           }
-        }
+        },
       ]
     }
 
