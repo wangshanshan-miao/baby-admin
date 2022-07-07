@@ -36,6 +36,34 @@ import { reactive } from 'vue';
     delUrl: '/System/DelRolesInAdmin',
     // 删除数据api所需要的参数字段
     delKey: 'roCode',
+    searchForm:{
+      els:[
+        {
+          // 组件类型为 el-input
+            eType: 'el-input',
+            // 搜索项的标签
+            label: '商品',
+            // 字段名称
+            prop: 'product',
+            // 组件el-input的props
+            props: {
+              placeholder: '商品',
+            },
+            // 组件el-input的事件
+            events: {
+              // 监听值的改变
+              change(val) {
+                console.log(val)
+                // changeQuery(val)
+              }
+            },
+            // 组件el-input的样式
+            style: {
+              width: '200px' 
+            }
+          }
+      ]
+    },
     table: {
       // 表格操作栏
       operate: {

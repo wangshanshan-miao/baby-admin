@@ -1,25 +1,26 @@
+
 <script setup lang="tsx">
   import { processdRequest } from '@/utils/request';
-import { defineConfig } from '@juzhenfe/page-model'
-import { reactive } from 'vue';
-
+  import { defineConfig } from '@juzhenfe/page-model'
+  import { reactive,ref } from 'vue';
   // 为配置项提供反射数据源
   const reflections = reactive<{
-    roleList: TestRoleResultModel[]
+    roleList: BrandResultModel[]
   }>({
     roleList: []
-  })
+  });
 
-  // 接口获取下拉列表数据
-  ;(async () => {
-    const result = await processdRequest.post<TestRoleResultModel[]>('/System/GetRolesListInAdmin', {
+  const getData = async () => {
+    const result = await processdRequest.post<BrandResultModel[]>('/System/GetRolesListInAdmin', {
       pageIndex: 1,
-      pageSize: 2
+      pageSize: 2,
+      brandName,
     })
+    console.log(result,'1111')
     reflections.roleList = result
-  })()
+  }
 
-  const config = defineConfig<TestRoleResultModel>({
+  const config = defineConfig<BrandResultModel>({
     // 启用反射数据源,需要为pageModel注入reflections
     reflect: true,
 
@@ -36,6 +37,34 @@ import { reactive } from 'vue';
     delUrl: '/System/DelRolesInAdmin',
     // 删除数据api所需要的参数字段
     delKey: 'roCode',
+    searchForm:{
+      els:[
+        {
+          // 组件类型为 el-input
+            eType: 'el-input',
+            // 搜索项的标签
+            label: '活动名称',
+            // 字段名称
+            prop: 'activityName',
+            // 组件el-input的props
+            props: {
+              placeholder: '活动名称',
+            },
+            // 组件el-input的事件
+            events: {
+              // 监听值的改变
+              change(val) {
+                console.log(val)
+                // changeQuery(val)
+              }
+            },
+            // 组件el-input的样式
+            style: {
+              width: '200px' 
+            }
+          }
+      ]
+    },
     table: {
       // 表格操作栏
       operate: {
@@ -68,7 +97,7 @@ import { reactive } from 'vue';
           label: '公司名',
           renderFn(row) {
             return (
-              <span>{ row.address }</span>
+              <span>{ row.roName }</span>
             )
           }
         },

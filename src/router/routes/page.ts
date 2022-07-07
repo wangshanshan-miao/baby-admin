@@ -13,6 +13,7 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: '/brand',
+ 
         component: () => import('@/pages/brand/index.vue')
       },
       {
@@ -20,7 +21,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/pages/brand-store/index.vue')
       },
       {
-        path: '/brandproduct',
+        path: '/test',
         component: () => import('@/pages/brand-product/index.vue')
       }
     ]
