@@ -27,22 +27,28 @@ import { reactive } from 'vue';
     size: 'default',
 
     // 获取列表的api
-    getUrl: '/System/GetRolesListInAdmin',
+    getUrl: '/Brand/GetBrandGoodsList',
     // 新增数据的api
-    addUrl: '/System/AddRolesInAdmin',
+    addUrl: '/Brand/AddBrandGoods',
     // 更新数据的api
-    updUrl: '/System/UpdateRolesInAdmin',
+    updUrl: '/Brand/UpdateBrandGoods',
     // 删除数据的api
-    delUrl: '/System/DelRolesInAdmin',
+    delUrl: '/Brand/DeleteBrandGoods',
     // 删除数据api所需要的参数字段
-    delKey: 'roCode',
+    delKey: 'id',
+    addButton: {
+        text: "新增产品",
+        props: {
+            type: 'primary'
+        }
+    },
     searchForm:{
       els:[
         {
           // 组件类型为 el-input
             eType: 'el-input',
             // 搜索项的标签
-            label: '商品',
+            label: 'goodsName',
             // 字段名称
             prop: 'product',
             // 组件el-input的props
@@ -91,51 +97,27 @@ import { reactive } from 'vue';
           label: '商品图片',
           renderFn(row) {
             return (
-              <img style="width:3em;height:3em;" src="https://img0.baidu.com/it/u=8212649,2817595929&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500"/>
+              <img style="width:3em;height:3em;" src={row.goodsImg}/>
             )
           }
         },
         // render渲染字段
         {
           label: '商品名称',
-          renderFn(row) {
-            return (
-              <span>{ row.address }</span>
-            )
-          }
+          prop: 'goodsName'
         },
         {
           label: '商品规格',
-          renderFn(row) {
-            return (
-              <span>{ row.address1 }</span>
-            )
-          }
+          prop: 'goodsSpec'
         },
         {
           label: '商品代码',
-          renderFn(row) {
-            return (
-              <span>{ row.address2 }</span>
-            )
-          }
+          prop: 'goodsCode'
         },
         {
           label: '商品描述',
-          renderFn(row) {
-            return (
-              <span>{ row.contactPhone3 }</span>
-            )
-          }
-        },
-        {
-          label: '数量（发放/库存）',
-          renderFn(row) {
-            return (
-              <span>{ row.contactPhone1 }</span>
-            )
-          }
-        },
+          prop: 'goodsDes'
+        }
       ]
     },
     // 是否存在表单
@@ -150,7 +132,7 @@ import { reactive } from 'vue';
 
       // 快速填写表单必填参数
       required: [
-        'roName'
+        'goodsName'
       ],
 
       // 表单模式 弹框和全页面
@@ -180,7 +162,7 @@ import { reactive } from 'vue';
         // 普通输入框例子
         {
           label: '产品名',
-          prop: 'roName',
+          prop: 'goodsName',
           eType: 'el-input',
 
           // 布局属性
@@ -195,7 +177,7 @@ import { reactive } from 'vue';
         },
         {
           label: '产品规格',
-          prop: 'ro1',
+          prop: 'goodsSpec',
           eType: 'el-input',
 
           // 布局属性
@@ -208,7 +190,7 @@ import { reactive } from 'vue';
         },
         {
           label: '产品代码',
-          prop: 'roCode',
+          prop: 'goodsCode',
           eType: 'el-input',
           col: {
             span: 24
@@ -217,20 +199,20 @@ import { reactive } from 'vue';
             width: '100%'
           }
         },
-        {
-          label: '品牌',
-          prop: 'roCode',
-          eType: 'el-input',
-          col: {
-            span: 24
-          },
-          style: {
-            width: '100%'
-          }
-        },
+        // {
+        //   label: '品牌',
+        //   prop: 'roCode',
+        //   eType: 'el-input',
+        //   col: {
+        //     span: 24
+        //   },
+        //   style: {
+        //     width: '100%'
+        //   }
+        // },
         {
           eType: 'img-upload',
-          prop: 'img',
+          prop: 'goodsImg',
           label: '商品图',
           props: {
             // 多图模式
@@ -239,7 +221,7 @@ import { reactive } from 'vue';
         },
         {
           label: '商品描述',
-          prop: 'desc',
+          prop: 'goodsDes',
           eType: 'el-input',
           props:{
             type:'textarea'
@@ -253,7 +235,7 @@ import { reactive } from 'vue';
         },
         {
           label: '是否启用',
-          prop: 'desc1',
+          prop: 'isOpen',
           eType: 'el-switch',
           col: {
             span: 24
@@ -264,7 +246,7 @@ import { reactive } from 'vue';
         },
         {
           label: '是否限制',
-          prop: 'desc2',
+          prop: 'isLimit',
           eType: 'el-switch',
           col: {
             span: 24

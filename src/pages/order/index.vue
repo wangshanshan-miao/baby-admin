@@ -28,7 +28,7 @@
     size: 'default',
 
     // 获取列表的api
-    getUrl: '/System/GetRolesListInAdmin',
+    getUrl: '/OrderControler/GetOrderList',
     // 新增数据的api
     addUrl: '/System/AddRolesInAdmin',
     // 更新数据的api
@@ -37,6 +37,7 @@
     delUrl: '/System/DelRolesInAdmin',
     // 删除数据api所需要的参数字段
     delKey: 'roCode',
+    isAutoAddButton: false,
     searchForm:{
       els:[
         {
@@ -58,7 +59,7 @@
         {
           eType: 'el-input',
           label: '姓名',
-          prop: 'name',
+          prop: 'userName',
           props: {
             placeholder: '姓名',
           },
@@ -74,14 +75,9 @@
         {
           eType: 'el-input',
           label: '收件人',
-          prop: 'recive',
+          prop: 'recevicePerson',
           props: {
             placeholder: '收件人',
-          },
-          events: {
-            change(val) {
-              console.log(val)
-            }
           },
           style: {
             width: '200px' 
@@ -90,17 +86,20 @@
         {
           eType: 'el-date-picker',
           label: '时间',
-          prop: 'activityName',
+          prop: 'time',
           props: {
-             type:"daterange"
+             type:"daterange",
+             valueFormat: 'YYYY-MM-DD'
           },
           events: {
             change(val) {
-              console.log(val)
+              console.log(val,this.formData)
+              this.formData.dtStart = val[0]
+              this.formData.dtEnd = val[1]
             }
           },
           style: {
-            width: '200px' 
+            width: '400px' 
           }
         },
           
@@ -110,71 +109,70 @@
       // 表格操作栏
       operate: {
         els: [
-          {
-            text: '编辑',
-            isEdit: true,
-            props: {
-              type: 'primary',
-            }
-          },
-          {
-            text: '删除',
-            isDel: true,
-            props: {
-              type: 'danger',
-            }
-          }
+          // {
+          //   text: '编辑',
+          //   isEdit: true,
+          //   props: {
+          //     type: 'primary',
+          //   }
+          // },
+          // {
+          //   text: '删除',
+          //   isDel: true,
+          //   props: {
+          //     type: 'danger',
+          //   }
+          // }
         ]
       },
+      showTool: false,
       // 表格的列成员
       els: [
         // 普通表格字段
         {
           label: '活动名',
-          prop: 'roCode'
+          prop: 'activityName'
         },
         // render渲染字段
         {
           label: '姓名',
-          prop: 'roname'
+          prop: 'userName',
+          width: 80
         },
         {
           label: '收件人',
-          renderFn(row) {
-            return (
-              <span>{ row.name }</span>
-            )
-          }
+          prop: 'recevicePerson',
+          width: 100
         },
         {
           label: '手机号',
-          renderFn(row) {
-            return (
-              <span>{ row.phone }</span>
-            )
-          }
+          prop: 'receiveMobile'
         },
         {
           label: '地址',
           renderFn(row) {
             return (
-              <span>{ row.address }</span>
+              <span>{ row.receiveProvinceName + row.receiveCiytName + row.receiveAreaName + row.receiveAddressDetail }</span>
             )
           }
+        },
+        {
+          label: '礼品',
+          prop: 'goodsName'
         },
         {
           label: '领取时间',
-          renderFn(row) {
-            return (
-              <span>{ row.contactPhone1 }</span>
-            )
-          }
+          prop: 'receiveTime'
         },
         {
           label: '发货时间',
+          prop: 'deliverTime'
+        },
+        {
+          label: '物流快递',
           renderFn(row) {
             return (
-              <span>{ row.contactPhone1 }</span>
+              <el-button>查看</el-button>
             )
           }
         }

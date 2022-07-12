@@ -27,17 +27,17 @@ import { reactive } from 'vue';
     size: 'default',
 
     // 获取列表的api
-    getUrl: '/Brand/GetBrandStoreModelList',
+    getUrl: '/System/GetRolesListInAdmin',
     // 新增数据的api
-    addUrl: '/Brand/AddBrandStore',
+    addUrl: '/System/AddRolesInAdmin',
     // 更新数据的api
-    updUrl: '/Brand/UpdateBrandStore',
+    updUrl: '/System/UpdateRolesInAdmin',
     // 删除数据的api
-    delUrl: '/Brand/DeleteBrandStore',
+    delUrl: '/System/DelRolesInAdmin',
     // 删除数据api所需要的参数字段
-    delKey: 'id',
+    delKey: 'roCode',
     addButton: {
-        text: "新增门店",
+        text: "新建品牌商",
         props: {
             type: 'primary'
         }
@@ -48,12 +48,12 @@ import { reactive } from 'vue';
           // 组件类型为 el-input
             eType: 'el-input',
             // 搜索项的标签
-            label: '门店',
+            label: '品牌商',
             // 字段名称
-            prop: 'storeName',
+            prop: 'store',
             // 组件el-input的props
             props: {
-              placeholder: '门店',
+              placeholder: '品牌商',
             },
             // 组件el-input的事件
             events: {
@@ -87,25 +87,29 @@ import { reactive } from 'vue';
             props: {
               type: 'danger',
             }
+          },
+          {
+            text: '结束',
+            isEdit: true,
+            props: {
+              type: 'primary',
+            }
           }
         ]
       },
-      // 表格的列成员
       els: [
-        // 普通表格字段
         {
-          label: '门店',
-          prop: 'storeName'
-        },
-        // render渲染字段
-        {
-          label: '门店地址',
-          prop: 'storeAddress'
+          label: '品牌商',
+          prop: 'roCode'
         },
         {
-          label: '门店联系电话',
-          prop: 'contactMobile'
-        },
+          label: '创建时间',
+          renderFn(row) {
+            return (
+              <span>{ row.address }</span>
+            )
+          }
+        }
       ]
     },
     // 是否存在表单
@@ -134,7 +138,6 @@ import { reactive } from 'vue';
       // 绑定数据钩子函数
       async bindData(formData) {
         // this 指向表单管理器
-        formData.storeAddress = formData.inAddressJson ? formData.inAddressJson.codeCity : ''
         console.log(this,formData,'绑定数据钩子函数')
         return formData
       },
@@ -142,9 +145,6 @@ import { reactive } from 'vue';
       // 表单数据提交前的钩子函数
       async beforeSubmit(formData) {
         // this 指向表单管理器
-        formData.storeAddress = formData.inAddressJson.city+formData.address
-        formData.storeLong = formData.location[0]
-        formData.storeLatitude = formData.location[1]
         console.log(this,formData,'表单数据提交前的钩子函数')
         return formData
       },
@@ -153,9 +153,9 @@ import { reactive } from 'vue';
       els: [
         // 普通输入框例子
         {
-          label: '门店',
-          prop: 'storeName',
-          eType: 'el-input',
+          label: '品牌商',
+          prop: 'roName',
+          eType: 'el-select',
 
           // 布局属性
           col: {
@@ -166,74 +166,6 @@ import { reactive } from 'vue';
           style: {
             width: '100%'
           }
-        },
-
-        // 图片上传
-        {
-          eType: 'img-upload',
-          prop: 'storeImg',
-          label: '门店图片',
-          props: {
-            // 多图模式
-            mult: true
-          }
-        },
-        // 下拉选择
-        // 普通下拉,静态数据支撑
-        {
-          eType: 'city-picker',
-          prop: 'storeAddress',
-          label: '地址',
-          events: {
-            valueChange:function(citys?: CityItem[]) {
-              let obj = {
-                city: citys[0].label + citys[1].label + citys[2].label,
-                codeCity: this.formData.storeAddress
-              }
-              this.formData.inAddressJson = JSON.stringify(obj)
-              this.formData.cityCode = citys[2].value
-              this.formData.cityName = citys[2].label
-            }
-          }
-        },
-        {
-          label: '具体地址',
-          prop: 'address',
-          eType: 'el-input',
-          // 布局属性
-          col: {
-            span: 24
-          },
-          // 控制组件根元素的样式
-          style: {
-            width: '100%'
-          }
-        },
-        {
-          label: '联系电话',
-          prop: 'contactMobile',
-          eType: 'el-input'
-        },
-        // 普通输入框例子
-        {
-          label: '定位',
-          prop: 'location',
-          eType: 'a-map',
-
-          // 布局属性
-          col: {
-            span: 24
-          },
-
-          // 控制组件根元素的样式
-          style: {
-            width: '100%'
-          }
-        },
-        {
-          label: '是否开启会员',
-          prop: 'isUp',
-          eType: 'el-switch'
         }
       ]
     }

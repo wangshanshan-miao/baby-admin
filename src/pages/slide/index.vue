@@ -28,15 +28,21 @@
     size: 'default',
 
     // 获取列表的api
-    getUrl: '/System/GetRolesListInAdmin',
+    getUrl: '/ConfigControler/GetActivityList',
     // 新增数据的api
-    addUrl: '/System/AddRolesInAdmin',
+    addUrl: '/ConfigControler/AddSlide',
     // 更新数据的api
-    updUrl: '/System/UpdateRolesInAdmin',
+    updUrl: '/ConfigControler/UpdateSlide',
     // 删除数据的api
-    delUrl: '/System/DelRolesInAdmin',
+    delUrl: '/ConfigControler/DeleteSlide',
     // 删除数据api所需要的参数字段
-    delKey: 'roCode',
+    delKey: 'id',
+    addButton: {
+        text: "新增幻灯片",
+        props: {
+            type: 'primary'
+        }
+    },
     searchForm:{
       els:[
         {
@@ -45,7 +51,7 @@
             // 搜索项的标签
             label: '幻灯片名称',
             // 字段名称
-            prop: 'activityName',
+            prop: 'slideName',
             // 组件el-input的props
             props: {
               placeholder: '幻灯片名称',
@@ -90,48 +96,49 @@
         // 普通表格字段
         {
           label: '幻灯片名称',
-          prop: 'roCode'
+          prop: 'slideName'
         },
         // render渲染字段
         {
           label: '幻灯片照片',
           renderFn(row) {
             return (
-              <img style="width:3em;height:3em;" src="https://img0.baidu.com/it/u=8212649,2817595929&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500"/>
-            )
-          }
-        },
-        {
-          label: '联系人',
-          renderFn(row) {
-            return (
-              <span>{ row.contactPhone }</span>
+              <img style="width:3em;height:3em;" src={ row.slideImg }/>
             )
           }
         },
         {
           label: '显示位置',
           renderFn(row) {
-            return (
-              <span>{ row.contactPhone1 }</span>
-            )
+            if(row.showPosition ==0) {
+              return (
+                <span>首页</span>
+              )
+            }else {
+              return (
+                <span>个人中心</span>
+              )
+            }
+            
           }
         },
         {
           label: '是否启用',
           renderFn(row) {
-            return (
-              <span>{ row.contactPhone1 }</span>
-            )
+            if (row.isOpen) {
+              return (
+                <span>是</span>
+              )
+            } else {
+              return (
+                <span>否</span>
+              )
+            }
           }
         },
         {
           label: '排序',
-          renderFn(row) {
-            return (
-              <span>{ row.contactPhone1 }</span>
-            )
-          }
+          prop: 'sort'
         }
       ]
     },
@@ -147,7 +154,7 @@
 
       // 快速填写表单必填参数
       required: [
-        'roName'
+        'slideName','slideImg','showPosition', 'sort'
       ],
 
       // 表单模式 弹框和全页面
@@ -177,7 +184,7 @@
         // 普通输入框例子
         {
           label: '幻灯片名称',
-          prop: 'roName',
+          prop: 'slideName',
           eType: 'el-input',
 
           // 布局属性
@@ -194,7 +201,7 @@
         // 图片上传
         {
           eType: 'img-upload',
-          prop: 'img',
+          prop: 'slideImg',
           label: '幻灯片图片',
           props: {
             // 多图模式
@@ -205,7 +212,7 @@
         // 普通下拉,静态数据支撑
         {
           eType: 'el-select',
-          prop: 'roName2',
+          prop: 'showPosition',
           label: '显示位置',
 
           // select组件的属性
@@ -216,19 +223,19 @@
           optionsData: {
             list: [
               {
-                label: '下拉选项1',
-                value: '选项1'
+                label: '首页',
+                value: 0
               },
               {
-                label: '下拉选项2',
-                value: '选项2'
+                label: '个人中心',
+                value: 1
               }
             ]
           }
         },
         {
           label: '是否启用',
-          prop: 'roName',
+          prop: 'isOpen',
           eType: 'el-switch',
           // 布局属性
           col: {
@@ -242,7 +249,7 @@
         // 普通输入框例子
         {
           label: '排序',
-          prop: 'location',
+          prop: 'sort',
           eType: 'el-input',
 
           // 布局属性

@@ -9,7 +9,7 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: '/test',
-        component: () => import('@/pages/test-role/index.vue')
+        component: () => import('@/pages/user/index.vue')
       },
       //品牌商管理
       {
@@ -35,6 +35,56 @@ const routes: RouteRecordRaw[] = [
       {
         path: '/order',
         component: () => import('@/pages/order/index.vue')
+      },
+      // 活动管理
+      {
+        path: '/activity',
+        component: () => import('@/pages/activity/index.vue')
+      },
+      // 推荐码管理
+      {
+        path: '/recommend',
+        component: () => import('@/pages/recommend/index.vue')
+      },
+       // 妈妈社区
+       {
+        path: '/mom',
+        component: () => import('@/pages/mom/index.vue')
+      },
+      //品牌商
+      {
+        path: '/brandDealer',
+        component: () => import('@/pages/brand-dealer/index.vue')
+      },
+      //子活动管理
+      {
+        path: '/childActivity',
+        component: () => import('@/pages/child-activity/index.vue')
+      },
+      //选手
+      {
+        path: '/player',
+        component: () => import('@/pages/player/index.vue')
+      },
+      //礼品奖励
+      {
+        path: '/gift',
+        component: () => import('@/pages/gifts/index.vue')
+      },
+      //配置管理
+      {
+        path: '/sets',
+        component: () => import('@/pages/sets/index.vue')
+      },
+      //年龄配置管理
+      {
+        path: '/age',
+        component: () => import('@/pages/age-set/index.vue')
+      },
+      //用户配置管理
+      {
+        path: '/user',
+        component: () => import('@/pages/user/index.vue')
       }
     ]
   }

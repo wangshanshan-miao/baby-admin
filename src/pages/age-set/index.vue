@@ -1,25 +1,26 @@
+
 <script setup lang="tsx">
   import { processdRequest } from '@/utils/request';
-import { defineConfig } from '@juzhenfe/page-model'
-import { reactive } from 'vue';
-
+  import { defineConfig } from '@juzhenfe/page-model'
+  import { reactive,ref } from 'vue';
   // 为配置项提供反射数据源
   const reflections = reactive<{
-    roleList: TestRoleResultModel[]
+    roleList: BrandResultModel[]
   }>({
     roleList: []
-  })
+  });
 
-  // 接口获取下拉列表数据
-  ;(async () => {
-    const result = await processdRequest.post<TestRoleResultModel[]>('/System/GetRolesListInAdmin', {
+  const getData = async () => {
+    const result = await processdRequest.post<BrandResultModel[]>('/System/GetRolesListInAdmin', {
       pageIndex: 1,
-      pageSize: 2
+      pageSize: 2,
+      brandName,
     })
+    console.log(result,'1111')
     reflections.roleList = result
-  })()
+  }
 
-  const config = defineConfig<TestRoleResultModel>({
+  const config = defineConfig<BrandResultModel>({
     // 启用反射数据源,需要为pageModel注入reflections
     reflect: true,
 
@@ -27,20 +28,48 @@ import { reactive } from 'vue';
     size: 'default',
 
     // 获取列表的api
-    getUrl: '/Brand/GetBrandStoreModelList',
+    getUrl: '/ConfigControler​/GetAgeConfigList',
     // 新增数据的api
-    addUrl: '/Brand/AddBrandStore',
+    addUrl: '/ConfigControler/AddAgeConfig',
     // 更新数据的api
-    updUrl: '/Brand/UpdateBrandStore',
+    updUrl: '/ConfigControler/UpdateAgeConfig',
     // 删除数据的api
-    delUrl: '/Brand/DeleteBrandStore',
+    delUrl: '/ConfigControler/DeleteAgeConfig',
     // 删除数据api所需要的参数字段
     delKey: 'id',
     addButton: {
-        text: "新增门店",
+        text: "新增年龄配置",
         props: {
             type: 'primary'
         }
+    },
+    tabs: {
+        // 可选
+        props: {
+            // 配置eltabs的参数
+            // 如 type: 'card'
+        },
+        // 根据panes构建el-tab-pane
+        panes: [
+            {
+            label: '未处理订单',
+            value: {
+                status: '未处理'
+            }
+            },
+            {
+            label: '处理中订单',
+            value: {
+                status: '处理中'
+            }
+            },
+            {
+            label: '已处理订单',
+            value: {
+                status: '已处理'
+            }
+            }
+        ]
     },
     searchForm:{
       els:[
@@ -48,12 +77,12 @@ import { reactive } from 'vue';
           // 组件类型为 el-input
             eType: 'el-input',
             // 搜索项的标签
-            label: '门店',
+            label: '幻灯片名称',
             // 字段名称
-            prop: 'storeName',
+            prop: 'slideName',
             // 组件el-input的props
             props: {
-              placeholder: '门店',
+              placeholder: '幻灯片名称',
             },
             // 组件el-input的事件
             events: {
@@ -94,18 +123,51 @@ import { reactive } from 'vue';
       els: [
         // 普通表格字段
         {
-          label: '门店',
-          prop: 'storeName'
+          label: '幻灯片名称',
+          prop: 'slideName'
         },
         // render渲染字段
         {
-          label: '门店地址',
-          prop: 'storeAddress'
+          label: '幻灯片照片',
+          renderFn(row) {
+            return (
+              <img style="width:3em;height:3em;" src={ row.slideImg }/>
+            )
+          }
         },
         {
-          label: '门店联系电话',
-          prop: 'contactMobile'
+          label: '显示位置',
+          renderFn(row) {
+            if(row.showPosition ==0) {
+              return (
+                <span>首页</span>
+              )
+            }else {
+              return (
+                <span>个人中心</span>
+              )
+            }
+            
+          }
         },
+        {
+          label: '是否启用',
+          renderFn(row) {
+            if (row.isOpen) {
+              return (
+                <span>是</span>
+              )
+            } else {
+              return (
+                <span>否</span>
+              )
+            }
+          }
+        },
+        {
+          label: '排序',
+          prop: 'sort'
+        }
       ]
     },
     // 是否存在表单
@@ -120,7 +182,7 @@ import { reactive } from 'vue';
 
       // 快速填写表单必填参数
       required: [
-        'roName'
+        'slideName','slideImg','showPosition', 'sort'
       ],
 
       // 表单模式 弹框和全页面
@@ -134,7 +196,6 @@ import { reactive } from 'vue';
       // 绑定数据钩子函数
       async bindData(formData) {
         // this 指向表单管理器
-        formData.storeAddress = formData.inAddressJson ? formData.inAddressJson.codeCity : ''
         console.log(this,formData,'绑定数据钩子函数')
         return formData
       },
@@ -142,9 +203,6 @@ import { reactive } from 'vue';
       // 表单数据提交前的钩子函数
       async beforeSubmit(formData) {
         // this 指向表单管理器
-        formData.storeAddress = formData.inAddressJson.city+formData.address
-        formData.storeLong = formData.location[0]
-        formData.storeLatitude = formData.location[1]
         console.log(this,formData,'表单数据提交前的钩子函数')
         return formData
       },
@@ -153,8 +211,8 @@ import { reactive } from 'vue';
       els: [
         // 普通输入框例子
         {
-          label: '门店',
-          prop: 'storeName',
+          label: '幻灯片名称',
+          prop: 'slideName',
           eType: 'el-input',
 
           // 布局属性
@@ -171,8 +229,8 @@ import { reactive } from 'vue';
         // 图片上传
         {
           eType: 'img-upload',
-          prop: 'storeImg',
-          label: '门店图片',
+          prop: 'slideImg',
+          label: '幻灯片图片',
           props: {
             // 多图模式
             mult: true
@@ -181,25 +239,32 @@ import { reactive } from 'vue';
         // 下拉选择
         // 普通下拉,静态数据支撑
         {
-          eType: 'city-picker',
-          prop: 'storeAddress',
-          label: '地址',
-          events: {
-            valueChange:function(citys?: CityItem[]) {
-              let obj = {
-                city: citys[0].label + citys[1].label + citys[2].label,
-                codeCity: this.formData.storeAddress
+          eType: 'el-select',
+          prop: 'showPosition',
+          label: '显示位置',
+
+          // select组件的属性
+          props: {
+            filterable: true,
+            clearable: true
+          },
+          optionsData: {
+            list: [
+              {
+                label: '首页',
+                value: 0
+              },
+              {
+                label: '个人中心',
+                value: 1
               }
-              this.formData.inAddressJson = JSON.stringify(obj)
-              this.formData.cityCode = citys[2].value
-              this.formData.cityName = citys[2].label
-            }
+            ]
           }
         },
         {
-          label: '具体地址',
-          prop: 'address',
-          eType: 'el-input',
+          label: '是否启用',
+          prop: 'isOpen',
+          eType: 'el-switch',
           // 布局属性
           col: {
             span: 24
@@ -208,17 +273,12 @@ import { reactive } from 'vue';
           style: {
             width: '100%'
           }
-        },
-        {
-          label: '联系电话',
-          prop: 'contactMobile',
-          eType: 'el-input'
         },
         // 普通输入框例子
         {
-          label: '定位',
-          prop: 'location',
-          eType: 'a-map',
+          label: '排序',
+          prop: 'sort',
+          eType: 'el-input',
 
           // 布局属性
           col: {
@@ -230,11 +290,6 @@ import { reactive } from 'vue';
             width: '100%'
           }
         },
-        {
-          label: '是否开启会员',
-          prop: 'isUp',
-          eType: 'el-switch'
-        }
       ]
     }
 

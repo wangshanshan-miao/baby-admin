@@ -2,6 +2,9 @@
   import { processdRequest } from '@/utils/request';
 import { defineConfig } from '@juzhenfe/page-model'
 import { reactive } from 'vue';
+import {useRouter} from 'vue-router'
+
+const route = useRouter()
 
   // 为配置项提供反射数据源
   const reflections = reactive<{
@@ -27,17 +30,20 @@ import { reactive } from 'vue';
     size: 'default',
 
     // 获取列表的api
-    getUrl: '/Brand/GetBrandStoreModelList',
+    getUrl: '/ActivirtyControler/GetActivityPlayerList',
+    otherParams: {
+      activityId: route.currentRoute.value.query.activityId
+    },
     // 新增数据的api
-    addUrl: '/Brand/AddBrandStore',
+    addUrl: '/ActivirtyControler​/AddActivityPlayer',
     // 更新数据的api
-    updUrl: '/Brand/UpdateBrandStore',
+    updUrl: '/ActivirtyControler/UpdateActivityPlayer',
     // 删除数据的api
-    delUrl: '/Brand/DeleteBrandStore',
+    delUrl: '/ActivirtyControler​/DeleteActivityPlayer',
     // 删除数据api所需要的参数字段
     delKey: 'id',
     addButton: {
-        text: "新增门店",
+        text: "新建选手",
         props: {
             type: 'primary'
         }
@@ -48,12 +54,12 @@ import { reactive } from 'vue';
           // 组件类型为 el-input
             eType: 'el-input',
             // 搜索项的标签
-            label: '门店',
+            label: '选手名称',
             // 字段名称
-            prop: 'storeName',
+            prop: 'playerName',
             // 组件el-input的props
             props: {
-              placeholder: '门店',
+              placeholder: '选手名称',
             },
             // 组件el-input的事件
             events: {
@@ -71,6 +77,31 @@ import { reactive } from 'vue';
       ]
     },
     table: {
+      selectable: true,
+      selectableButtons: [
+        {
+            text: '新建选手',
+            event: 'add',
+            props: {
+                type: 'primary'
+            }
+        },
+        {
+            text: '批量设置淘汰',
+            event: 'setState',
+            props: {
+                type: 'primary'
+            }
+        }
+    ],
+    events: {
+        selectionChange(selection) {
+
+        },
+        setState() {
+            console.log(111)
+        }
+    },
       // 表格操作栏
       operate: {
         els: [
@@ -90,22 +121,50 @@ import { reactive } from 'vue';
           }
         ]
       },
-      // 表格的列成员
       els: [
-        // 普通表格字段
         {
-          label: '门店',
-          prop: 'storeName'
-        },
-        // render渲染字段
-        {
-          label: '门店地址',
-          prop: 'storeAddress'
+          label: '选手名称',
+          prop: 'playerName'
         },
         {
-          label: '门店联系电话',
-          prop: 'contactMobile'
+          label: '照片',
+          prop: 'playerImg',
+          renderFn(row) {
+            return (
+              <img style="width: 100%" src={ row.playerImg } />
+            )
+          }
         },
+        {
+            label: '擅长领域',
+           prop: 'playerFields'
+        },
+        {
+          label: '选手介绍',
+          prop: 'playerIntroduce'
+        },
+        {
+          label: '选中状态',
+          renderFn(row) {
+            if (row.status == 0) {
+              return (
+                <span>未开启</span>
+              )
+            }else if (row.status == 1) {
+              return (
+                <span>进行中</span>
+              )
+            } else {
+              return (
+                <span>已完成</span>
+              )
+            }
+          }
+        },
+        {
+          label: '投票数（排序）',
+          prop: 'votesNumber'
+        }
       ]
     },
     // 是否存在表单
@@ -120,7 +179,7 @@ import { reactive } from 'vue';
 
       // 快速填写表单必填参数
       required: [
-        'roName'
+        'playerName'
       ],
 
       // 表单模式 弹框和全页面
@@ -134,7 +193,6 @@ import { reactive } from 'vue';
       // 绑定数据钩子函数
       async bindData(formData) {
         // this 指向表单管理器
-        formData.storeAddress = formData.inAddressJson ? formData.inAddressJson.codeCity : ''
         console.log(this,formData,'绑定数据钩子函数')
         return formData
       },
@@ -142,98 +200,54 @@ import { reactive } from 'vue';
       // 表单数据提交前的钩子函数
       async beforeSubmit(formData) {
         // this 指向表单管理器
-        formData.storeAddress = formData.inAddressJson.city+formData.address
-        formData.storeLong = formData.location[0]
-        formData.storeLatitude = formData.location[1]
+        formData.activityId = route.currentRoute.value.query.activityId
+        formData.playerFieldsIcon = ""
+        formData.status = 0
         console.log(this,formData,'表单数据提交前的钩子函数')
         return formData
       },
 
       // 表单元素成员
       els: [
-        // 普通输入框例子
         {
-          label: '门店',
-          prop: 'storeName',
-          eType: 'el-input',
-
-          // 布局属性
-          col: {
-            span: 24
-          },
-
-          // 控制组件根元素的样式
-          style: {
-            width: '100%'
-          }
+          label: '选手名称',
+          prop: 'playerName',
+          eType: 'el-input'
         },
-
         // 图片上传
         {
           eType: 'img-upload',
-          prop: 'storeImg',
-          label: '门店图片',
+          prop: 'playerImg',
+          label: '照片',
           props: {
             // 多图模式
             mult: true
           }
         },
-        // 下拉选择
-        // 普通下拉,静态数据支撑
         {
-          eType: 'city-picker',
-          prop: 'storeAddress',
-          label: '地址',
-          events: {
-            valueChange:function(citys?: CityItem[]) {
-              let obj = {
-                city: citys[0].label + citys[1].label + citys[2].label,
-                codeCity: this.formData.storeAddress
-              }
-              this.formData.inAddressJson = JSON.stringify(obj)
-              this.formData.cityCode = citys[2].value
-              this.formData.cityName = citys[2].label
-            }
-          }
-        },
-        {
-          label: '具体地址',
-          prop: 'address',
+          label: '擅长领域',
+          prop: 'playerFields',
           eType: 'el-input',
-          // 布局属性
-          col: {
-            span: 24
-          },
-          // 控制组件根元素的样式
-          style: {
-            width: '100%'
+          props: {
+              
           }
         },
         {
-          label: '联系电话',
-          prop: 'contactMobile',
-          eType: 'el-input'
-        },
-        // 普通输入框例子
-        {
-          label: '定位',
-          prop: 'location',
-          eType: 'a-map',
-
-          // 布局属性
-          col: {
-            span: 24
-          },
-
-          // 控制组件根元素的样式
-          style: {
-            width: '100%'
+          label: '选手介绍',
+          prop: 'playerIntroduce',
+          eType: 'el-input',
+          props: {
+              type: 'textarea',
+              minRows: 4
           }
         },
         {
-          label: '是否开启会员',
-          prop: 'isUp',
-          eType: 'el-switch'
+          label: '视频',
+          prop: 'playerVideo',
+          eType: 'img-upload',
+          props: {
+              mode: 'video'
+          }
         }
       ]
     }
