@@ -68,21 +68,25 @@ const routes: RouteRecordRaw[] = [
       },
       //礼品奖励
       {
-        path: '/gift',
+        path:'/test',
+        // path: '/gift',
         component: () => import('@/pages/gifts/index.vue')
       },
       //配置管理
       {
+        // path:'/test',
         path: '/sets',
         component: () => import('@/pages/sets/index.vue')
       },
       //年龄配置管理
       {
+        // path:'/test',
         path: '/age',
         component: () => import('@/pages/age-set/index.vue')
       },
       //用户配置管理
       {
+        // path:'/test',
         path: '/user',
         component: () => import('@/pages/user/index.vue')
       }

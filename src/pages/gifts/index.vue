@@ -1,9 +1,9 @@
 <script setup lang="tsx">
   import { processdRequest } from '@/utils/request';
 import { defineConfig } from '@juzhenfe/page-model'
-import { reactive } from 'vue';
+import { reactive,ref } from 'vue';
 import {useRouter} from 'vue-router'
-
+import CityPickerMult from './components/city-picker-mult.vue'
 const route = useRouter()
 
   // 为配置项提供反射数据源
@@ -11,7 +11,11 @@ const route = useRouter()
     brandList: [],
     goodsList: []
   })
-
+  const cityData = [
+    {name:111,code:1111},
+    {name:222,code:222},
+    {name:333,code:333},
+  ]
   // 接口获取下拉列表数据
   ;(async () => {
     const result = await processdRequest.post('/Brand/GetBrandBusinessList', {
@@ -191,7 +195,7 @@ const route = useRouter()
       },
       // 弹窗模式的参数配置
       dialogProps: {
-        width: '600px'
+        width: '800px'
       },
 
       // 绑定数据钩子函数
@@ -276,10 +280,26 @@ const route = useRouter()
           moduleName: '限制'
         },
         {
+          eType: 'el-select',
+          prop: 'receiveLimitCount',
           label: '孕周范围',
-          prop: 'roName',
-          eType: 'el-input',
-          moduleName: '限制'
+          moduleName: '限制',
+          props: {
+            filterable: true,
+            clearable: true
+          },
+          optionsData: {
+            list: [
+              {
+                label: '0周',
+                value: 0
+              },
+              {
+                label: '婴6个月',
+                value: 1
+              }
+            ]
+          }
         },
         {
           label: '使用范围',
@@ -299,18 +319,24 @@ const route = useRouter()
           }
         },
         {
+          // 不再使用eType
           label: '指定地区',
-          prop: 'cityName',
-          eType: 'city-picker',
           moduleName: '限制',
-          props: {
-            // 省市区等级
-            level: 2
-          },
-          events: {
-            valueChange: function(citys) {
-              console.log(citys)
+          // 此处row为表单数据formData
+          renderFn(row) {
+            // 处理事件
+            const update = (val: Array<[]>) => {
+              console.log(val,'val娃娃晚上')
+
+              row.cityCodes = val
             }
+            // 将一些复杂的逻辑隐藏在自定义组件中
+            return (
+                <CityPickerMult 
+                    codes={ row.cityCodes }
+                   onUpdate:codes={ update }
+                />
+            )
           }
         }
       ]
@@ -320,5 +346,6 @@ const route = useRouter()
 </script>
 
 <template>
+ <Limits @onUpdateValue="()=>{console.log(111)}"/>
   <page-model :config='config' :reflections="reflections" />
 </template>

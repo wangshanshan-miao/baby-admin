@@ -2,7 +2,8 @@
 <script setup lang="tsx">
   import { processdRequest } from '@/utils/request';
   import { defineConfig } from '@juzhenfe/page-model'
-  import { reactive,ref } from 'vue';
+  import { reactive,ref, toRaw } from 'vue';
+  import {ElMessageBox} from 'element-plus'
   // 为配置项提供反射数据源
   const reflections = reactive<{
     roleList: BrandResultModel[]
@@ -10,6 +11,27 @@
     roleList: []
   });
 
+  const dialogVisible = ref(false)
+  const selectData = reactive([])
+
+  const singleApply = () => {
+    dialogVisible.value = true
+  }
+  const singlePost = async (status) => {
+    let data = JSON.parse(JSON.stringify(selectData))
+    console.log(data,1111)
+    const result = await processdRequest.post('/UserControler/ExaminUserSingle', {
+      id:data[0].id,
+      examineStatus:status
+    })
+  }
+  const multiApply = async () => {
+    let data = JSON.parse(JSON.stringify(selectData))
+    console.log(data,1111)
+    const result = await processdRequest.post('/UserControler/ExaminUserSingle', {
+      id:data[0].id,
+    })
+  }
   const getData = async () => {
     const result = await processdRequest.post<BrandResultModel[]>('/System/GetRolesListInAdmin', {
       pageIndex: 1,
@@ -103,13 +125,15 @@
       events: {
         selectionChange(selections) {
           console.log(selections)
+          selectData.values = selections
+          console.log(selectData)
         }
       },
       selectable: true,
       selectableButtons: [
           {
               text: '审核',
-              event: 'add',
+              event: 'singleApply',
               props: {
                   type: 'primary'
               }
@@ -122,6 +146,7 @@
               }
           }
       ],
+
       // 表格的列成员
       els: [
         // render渲染字段
@@ -197,5 +222,20 @@
 </script>
 
 <template>
-  <page-model :config='config' :reflections="reflections" />
+  <page-model :config='config' :reflections="reflections" @singleApply='singleApply' @multiApply='multiApply'/>
+  <el-dialog
+    v-model="dialogVisible"
+    title="审核"
+    width="30%"
+  >
+    <span>是否审核通过？</span>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="singlePost(-1)">不通过</el-button>
+        <el-button type="primary" @click="singlePost(1)"
+          >通过</el-button
+        >
+      </span>
+    </template>
+  </el-dialog>
 </template>

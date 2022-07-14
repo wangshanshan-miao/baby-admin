@@ -1,100 +1,132 @@
+<script lang="ts">
+export default {
+  name: 'SetsPage'
+}    
 
-<script setup lang="tsx">
+</script>
+
+<script setup lang="ts">
   import { processdRequest } from '@/utils/request';
-  import { defineConfig } from '@juzhenfe/page-model'
-  import { reactive,ref } from 'vue';
-  // 为配置项提供反射数据源
-  const reflections = reactive<{
-    roleList: BrandResultModel[]
-  }>({
-    roleList: []
-  });
+  import {PROXY_MAGIC_URL} from '../../../vite.config'
+  import { onMounted,ref } from 'vue';
+  import { useRoute } from 'vue-router'
+  import {ElForm,ElFormItem,ElInput,ElSwitch,ElUpload,ElButton,ElLoading} from 'element-plus'
+  import { Plus } from '@element-plus/icons-vue'
+ import { reactive } from 'vue'
+  const formRef = ref<any>(null)
+  const loading = ref(false)
+  const submitloading = ref(false)
+
+  let setForm = reactive({
+    isopenexamine:false,
+    sharetitle:'',
+    shareimg:'',
+  })
+
+  const rules = reactive({
+      'sharetitle': [
+        { required: true, message: '请输入分享标题' }
+      ],
+      'shareimg': [
+        { required: true, message: '请上传分享图片' }
+      ]
+    })
+
+
+  onMounted(() => {
+    getData()
+  })
 
   const getData = async () => {
-    const result = await processdRequest.post<BrandResultModel[]>('/System/GetRolesListInAdmin', {
-      pageIndex: 1,
-      pageSize: 2
-    })
+    loading.value = true
+    const result = await processdRequest.post<SetsResultModel[]>('/ConfigControler/GetSystemConfig')
     console.log(result,'1111')
-    reflections.roleList = result
+    setForm.sharetitle = result.sharetitle
+    setForm.shareimg = result.shareimg
+    setForm.id = result.id
+    setForm.isopenexamine = result.isopenexamine
+    loading.value=false
   }
 
-  const config = defineConfig<BrandResultModel>({
-    // 启用反射数据源,需要为pageModel注入reflections
-    reflect: true,
 
-    // 页面的整体尺寸
-    size: 'default',
-
-    // 获取列表的api
-    getUrl: '/ConfigControler/GetSystemConfig',
-    // 新增数据的api
-    addUrl: '/System/AddRolesInAdmin',
-    // 更新数据的api
-    updUrl: '/ConfigControler/UpdateSystemConfig',
-    // 删除数据的api
-    delUrl: '/System/DelRolesInAdmin',
-    // 删除数据api所需要的参数字段
-    delKey: 'roCode',
-    // 是否存在表单
-    hasForm: true,
-    // 表单模型
-    form: {
-
-      // elForm的属性配置
-      props: {
-        labelWidth: '160px'
-      },
-
-      // 快速填写表单必填参数
-      required: [
-        'sharetitle'
-      ],
-
-      // 表单模式 弹框和全页面
-      mode: 'fullpage',
-
-      // 绑定数据钩子函数
-      async bindData(formData) {
-        // this 指向表单管理器
-        console.log(this,formData,'绑定数据钩子函数')
-        return formData
-      },
-
-      // 表单数据提交前的钩子函数
-      async beforeSubmit(formData) {
-        // this 指向表单管理器
-        console.log(this,formData,'表单数据提交前的钩子函数')
-        return formData
-      },
-
-      els: [
-        {
-          label: '开启审核',
-          prop: 'isopenexamine',
-          eType: 'el-switch',
-        },
-        {
-          label: '分享标题',
-          prop: 'sharetitle',
-          eType: 'el-input',
-        },
-        // 图片上传
-        {
-          eType: 'img-upload',
-          prop: 'img',
-          label: '分享图片',
-          props: {
-            // 多图模式
-            mult: false
-          },
-        }
-      ]
-    }
-
-  })
+  const onSubmit = async () => {
+    formRef.value.validate(async (valid: boolean) => {
+      console.log('vali::', valid)
+      if (!valid) return
+      submitloading.value = true
+      const result = await processdRequest.post<SetsResultModel[]>('/ConfigControler/UpdateSystemConfig',{
+        ...setForm
+      })
+      submitloading.value=false
+    })
+  }
+  const handleImageSuccess = (data) => {
+    console.log(data)
+    // imageUrl.value = URL.createObjectURL(uploadFile.raw!)
+  } 
+  const beforeImageUpload = (e) => {
+    console.log(e,'submit!')
+  }
 </script>
 
 <template>
-  <page-model :config='config' :reflections="reflections" />
+  <div class="sets-box">
+    <div class="title">配置管理</div>
+    <el-form :model="setForm" ref="formRef" :rules="rules" v-loading="loading">
+      <el-form-item label="开启审核">
+        <el-switch v-model="setForm.isopenexamine" />
+      </el-form-item>
+       <el-form-item label="分享标题">
+        <el-input v-model="setForm.sharetitle" />
+      </el-form-item>
+      <el-form-item label="分享图片">
+          <el-upload
+            class="avatar-uploader"
+            action='http://116.62.21.132:8670/api/upload/file'
+            :show-file-list="false"
+            :on-success="handleImageSuccess"
+            :before-upload="beforeImageUpload"
+          >
+            <img v-if="setForm.shareimg" :src="setForm.shareimg" class="avatar" />
+            <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
+          </el-upload>
+      </el-form-item>
+    </el-form>
+    <div class="btn-box">
+      <el-button type="primary" v-bind:loading="submitloading" @click="onSubmit">提交</el-button>
+    </div>
+  </div>
 </template>
+
+<style lang="scss" scoped>
+.sets-box {
+  width: 80%;
+  border:0;
+  margin: 0 auto;
+  padding-top: 24px;
+}
+.title{
+  height: 80px;
+  line-height: 80px;
+  font-size: 20px;
+  font-weight: 600;
+}
+.avatar-uploader{
+  font-size: 28px;
+  color: rgb(140, 147, 157);
+  width: 178px;
+  height: 178px;
+  text-align: center;
+  border: 1px dashed #dcdfe6;
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-box{
+  text-align: center;
+}
+
+</style>

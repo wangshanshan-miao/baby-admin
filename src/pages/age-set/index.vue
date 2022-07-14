@@ -38,7 +38,7 @@
     // 删除数据api所需要的参数字段
     delKey: 'id',
     addButton: {
-        text: "新增年龄配置",
+        text: "新增",
         props: {
             type: 'primary'
         }
@@ -52,52 +52,18 @@
         // 根据panes构建el-tab-pane
         panes: [
             {
-            label: '未处理订单',
+            label: '婴儿年龄范围',
             value: {
-                status: '未处理'
+                ageType: 1
             }
             },
             {
-            label: '处理中订单',
+            label: '孕周范围',
             value: {
-                status: '处理中'
+                ageType: 0
             }
             },
-            {
-            label: '已处理订单',
-            value: {
-                status: '已处理'
-            }
-            }
         ]
-    },
-    searchForm:{
-      els:[
-        {
-          // 组件类型为 el-input
-            eType: 'el-input',
-            // 搜索项的标签
-            label: '幻灯片名称',
-            // 字段名称
-            prop: 'slideName',
-            // 组件el-input的props
-            props: {
-              placeholder: '幻灯片名称',
-            },
-            // 组件el-input的事件
-            events: {
-              // 监听值的改变
-              change(val) {
-                console.log(val)
-                // changeQuery(val)
-              }
-            },
-            // 组件el-input的样式
-            style: {
-              width: '200px' 
-            }
-          }
-      ]
     },
     table: {
       // 表格操作栏
@@ -120,54 +86,18 @@
         ]
       },
       // 表格的列成员
+      //  ""ageType"": 0  //0=孕妈，1=宝妈
       els: [
         // 普通表格字段
         {
-          label: '幻灯片名称',
-          prop: 'slideName'
+          label: '婴儿年龄范围',
+          prop: 'slideageNameName',
         },
         // render渲染字段
         {
-          label: '幻灯片照片',
-          renderFn(row) {
-            return (
-              <img style="width:3em;height:3em;" src={ row.slideImg }/>
-            )
-          }
+          label: '创建时间',
+          prop: 'createTime',
         },
-        {
-          label: '显示位置',
-          renderFn(row) {
-            if(row.showPosition ==0) {
-              return (
-                <span>首页</span>
-              )
-            }else {
-              return (
-                <span>个人中心</span>
-              )
-            }
-            
-          }
-        },
-        {
-          label: '是否启用',
-          renderFn(row) {
-            if (row.isOpen) {
-              return (
-                <span>是</span>
-              )
-            } else {
-              return (
-                <span>否</span>
-              )
-            }
-          }
-        },
-        {
-          label: '排序',
-          prop: 'sort'
-        }
       ]
     },
     // 是否存在表单
@@ -182,7 +112,7 @@
 
       // 快速填写表单必填参数
       required: [
-        'slideName','slideImg','showPosition', 'sort'
+        'ageName','ageType'
       ],
 
       // 表单模式 弹框和全页面
@@ -209,10 +139,9 @@
 
       // 表单元素成员
       els: [
-        // 普通输入框例子
         {
-          label: '幻灯片名称',
-          prop: 'slideName',
+          label: '婴儿年龄范围',
+          prop: 'ageName',
           eType: 'el-input',
 
           // 布局属性
@@ -225,23 +154,10 @@
             width: '100%'
           }
         },
-
-        // 图片上传
-        {
-          eType: 'img-upload',
-          prop: 'slideImg',
-          label: '幻灯片图片',
-          props: {
-            // 多图模式
-            mult: true
-          }
-        },
-        // 下拉选择
-        // 普通下拉,静态数据支撑
         {
           eType: 'el-select',
-          prop: 'showPosition',
-          label: '显示位置',
+          prop: 'ageType',
+          label: '类型',
 
           // select组件的属性
           props: {
@@ -251,43 +167,14 @@
           optionsData: {
             list: [
               {
-                label: '首页',
+                label: '孕妈',
                 value: 0
               },
               {
-                label: '个人中心',
+                label: '宝妈',
                 value: 1
               }
             ]
-          }
-        },
-        {
-          label: '是否启用',
-          prop: 'isOpen',
-          eType: 'el-switch',
-          // 布局属性
-          col: {
-            span: 24
-          },
-          // 控制组件根元素的样式
-          style: {
-            width: '100%'
-          }
-        },
-        // 普通输入框例子
-        {
-          label: '排序',
-          prop: 'sort',
-          eType: 'el-input',
-
-          // 布局属性
-          col: {
-            span: 24
-          },
-
-          // 控制组件根元素的样式
-          style: {
-            width: '100%'
           }
         },
       ]
