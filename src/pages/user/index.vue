@@ -3,7 +3,7 @@
   import { processdRequest } from '@/utils/request';
   import { defineConfig } from '@juzhenfe/page-model'
   import { reactive,ref, toRaw } from 'vue';
-  import {ElMessageBox} from 'element-plus'
+  import {ElMessageBox,ElMessage} from 'element-plus'
   // 为配置项提供反射数据源
   const reflections = reactive<{
     roleList: BrandResultModel[]
@@ -15,22 +15,24 @@
   const selectData = reactive([])
 
   const singleApply = () => {
-    dialogVisible.value = true
+    if(selectData.values.length === 1){
+      dialogVisible.value = true
+    }else{
+      ElMessage({message:'请选择单条数据进行审核',type: 'warning',})
+    }
   }
   const singlePost = async (status) => {
-    let data = JSON.parse(JSON.stringify(selectData))
-    console.log(data,1111)
     const result = await processdRequest.post('/UserControler/ExaminUserSingle', {
-      id:data[0].id,
+      id:selectData.values[0].id,
       examineStatus:status
     })
+    // selectData.values = []
+    dialogVisible.value = false
   }
-  const multiApply = async () => {
-    let data = JSON.parse(JSON.stringify(selectData))
-    console.log(data,1111)
-    const result = await processdRequest.post('/UserControler/ExaminUserSingle', {
-      id:data[0].id,
-    })
+  const multiApply = async (status) => {
+      const result = await processdRequest.post('/UserControler/ExaminUserAll')
+      // selectData.values = []
+      dialogVisible.value = false
   }
   const getData = async () => {
     const result = await processdRequest.post<BrandResultModel[]>('/System/GetRolesListInAdmin', {
@@ -59,12 +61,13 @@
     delUrl: '/ConfigControler/DeleteAgeConfig',
     // 删除数据api所需要的参数字段
     delKey: 'id',
-    addButton: {
-        text: "新增年龄配置",
-        props: {
-            type: 'primary'
-        }
-    },
+    isAutoAddButton:false,
+    // addButton: {
+    //     text: "新增年龄配置",
+    //     props: {
+    //         type: 'primary'
+    //     }
+    // },
     searchForm:{
       els:[
         {
@@ -126,7 +129,7 @@
         selectionChange(selections) {
           console.log(selections)
           selectData.values = selections
-          console.log(selectData)
+          console.log(selectData,'www')
         }
       },
       selectable: true,
